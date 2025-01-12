@@ -21,7 +21,6 @@
 
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
@@ -29,6 +28,7 @@
             android:hint="Customer Name">
 
             <EditText
+                android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
@@ -36,7 +36,6 @@
 
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -44,6 +43,7 @@
             android:hint="Loan Number">
 
             <EditText
+                android:id="@+id/laon_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 

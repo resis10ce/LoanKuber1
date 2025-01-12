@@ -1,7 +1,7 @@
 plugins {
-    id("com.android.application")
+    alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("com.google.gms.google-services")
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -50,6 +50,7 @@ dependencies {
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -59,7 +60,7 @@ dependencies {
     implementation(libs.firebase.auth)
 
     //google sheet
-//implementation ("com.google.api-client:google-api-client-android:2.6.0")
+    //implementation ("com.google.api-client:google-api-client-android:2.6.0")
    // implementation ("com.google.apis:google-api-services-sheets:v4-rev20230413-1.34.0")
    // implementation ("com.google.oauth-client:google-oauth-client-java6:1.34.1")
    // implementation ("com.google.auth:google-auth-library-oauth2-http:1.3.0")
@@ -68,6 +69,12 @@ dependencies {
 
     //netowrk request
    // implementation("com.android.volley:volley:1.2.1")
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
 
 }
 

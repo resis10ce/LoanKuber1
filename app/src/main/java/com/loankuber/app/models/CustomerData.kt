@@ -1,3 +1,3 @@
 package com.loankuber.app.models
 
-data class CustomerData(val name: String,val loanNumber: String)
+data class CustomerData(val image: String, val map: String)
