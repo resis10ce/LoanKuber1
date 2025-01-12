@@ -11,6 +11,7 @@ import android.os.Looper
 import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,13 +26,15 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.loankuber.app.databinding.ActivityFormBinding
 import com.loankuber.app.models.CustomerData
+import com.loankuber.app.utils.SharedPrefsUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class FormActivity : AppCompatActivity() {
 
@@ -139,10 +142,11 @@ class FormActivity : AppCompatActivity() {
                 locationResult ?: return
                 for (location in locationResult.locations) {
                     val mapsLink = "https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}"
-                    Toast.makeText(this@FormActivity, "Link = $mapsLink", Toast.LENGTH_SHORT).show()
                     val name = binding.name.text.toString()
                     val loanNumber = binding.laonNumber.text.toString()
+
                     postLoanDetails(name, loanNumber, mapsLink)
+
                     fusedLocationClient.removeLocationUpdates(this)
                     return
                 }
@@ -159,13 +163,6 @@ class FormActivity : AppCompatActivity() {
             return
         }
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
-    }
-
-    private fun openMap(mapsLink: String) {
-        val gmmIntentUri = Uri.parse(mapsLink)
-        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-        mapIntent.setPackage("com.google.android.apps.maps")
-        startActivity(mapIntent)
     }
 
     private val requestCameraPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -224,14 +221,26 @@ class FormActivity : AppCompatActivity() {
         return Base64.encodeToString(imageBytes, Base64.DEFAULT)
     }
 
-    private fun postLoanDetails(name: String, loanNumber: String, map: String) {
-        val customerData = CustomerData(userImage!!, map)
+    private fun postLoanDetails(customerName: String, loanNumber: String, map: String) {
+
+        val agentName = SharedPrefsUtil.getInstance(this@FormActivity)?.getString(SharedPrefsUtil.AGENT_NAME)
+        if(agentName == null){
+            Toast.makeText(this, "Agent Name not found, please contact admin", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val customerData = CustomerData(agentName, customerName, loanNumber, userImage!!, map)
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                RetrofitInstance.api.postLoanDetails(name, loanNumber, customerData, "insert")
+                RetrofitInstance.api.postLoanDetails("insert", customerData)
                 withContext(Dispatchers.Main) {
+                    binding.name.setText("")
+                    binding.laonNumber.setText("")
+                    binding.image.setImageDrawable(getDrawable(R.drawable.no_image))
+                    userImage = null
+                    rbitmap = null
                     progressDialog.dismiss()
-                    Toast.makeText(this@FormActivity, "Success", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@FormActivity, "Submitted", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -242,4 +251,5 @@ class FormActivity : AppCompatActivity() {
             }
         }
     }
+
 }

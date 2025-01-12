@@ -58,6 +58,7 @@ dependencies {
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.database)
 
     //google sheet
     //implementation ("com.google.api-client:google-api-client-android:2.6.0")
