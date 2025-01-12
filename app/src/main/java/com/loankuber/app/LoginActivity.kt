@@ -20,6 +20,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var mRoot: DatabaseReference
 
     private lateinit var progressDialog: ProgressDialog
+    private lateinit var loginProgressDialog: ProgressDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,19 +34,31 @@ class LoginActivity : AppCompatActivity() {
             setCancelable(false)
         }
 
+        loginProgressDialog = ProgressDialog(this).apply {
+            setMessage("Please wait...")
+            setCancelable(false)
+        }
+
         val emailField: EditText = findViewById(R.id.email)
         val passwordField: EditText = findViewById(R.id.password)
         val loginBtn: Button = findViewById(R.id.login_btn)
 
         loginBtn.setOnClickListener {
+            loginProgressDialog.show()
             val email = emailField.text.toString()
             val password = passwordField.text.toString()
 
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        gotoFormActivity()
+                        loginProgressDialog.dismiss()
+                        if(auth.currentUser == null){
+                            Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show()
+                            return@addOnCompleteListener
+                        }
+                        gotoFormActivity(auth.currentUser!!.uid)
                     } else {
+                        loginProgressDialog.dismiss()
                         Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -58,28 +71,28 @@ class LoginActivity : AppCompatActivity() {
         val currentUser = auth.currentUser
         if (currentUser != null) {
             progressDialog.show()
-            mRoot.child("Agents").child(currentUser.uid).get().addOnSuccessListener {
-                if (it.exists()) {
-                    SharedPrefsUtil.getInstance(this)?.put(SharedPrefsUtil.AGENT_NAME, it.child("name").value.toString())
-                    gotoFormActivity()
-                    progressDialog.dismiss()
-                }
-                else{
-                    Toast.makeText(
-                        this,
-                        "Agent data not found, please contact admin",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    auth.signOut()
-                    progressDialog.dismiss()
-                }
-            }
+            gotoFormActivity(currentUser.uid)
         }
     }
 
-    private fun gotoFormActivity(){
-        val mainIntent = Intent(this, FormActivity::class.java)
-        startActivity(mainIntent)
-        finish()
+    private fun gotoFormActivity(uid: String){
+        mRoot.child("Agents").child(uid).get().addOnSuccessListener {
+            if (it.exists()) {
+                SharedPrefsUtil.getInstance(this)?.put(SharedPrefsUtil.AGENT_NAME, it.child("name").value.toString())
+                val mainIntent = Intent(this, FormActivity::class.java)
+                startActivity(mainIntent)
+                progressDialog.dismiss()
+                finish()
+            }
+            else{
+                Toast.makeText(
+                    this,
+                    "Agent data not found, please contact admin",
+                    Toast.LENGTH_SHORT
+                ).show()
+                auth.signOut()
+                progressDialog.dismiss()
+            }
+        }
     }
 }

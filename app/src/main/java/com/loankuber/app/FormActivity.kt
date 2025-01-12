@@ -226,6 +226,7 @@ class FormActivity : AppCompatActivity() {
         val agentName = SharedPrefsUtil.getInstance(this@FormActivity)?.getString(SharedPrefsUtil.AGENT_NAME)
         if(agentName == null){
             Toast.makeText(this, "Agent Name not found, please contact admin", Toast.LENGTH_SHORT).show()
+            progressDialog.dismiss()
             return
         }
 
