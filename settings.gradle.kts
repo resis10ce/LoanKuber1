@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "LoanKuber"
 include(":app")
- 
+include(":kuberadmin")
+include(":mylibrary")

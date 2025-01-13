@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    namespace = "com.loankuber.app"
-    compileSdk = 35
+    namespace = "com.loankuber.admin"
+    compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.loankuber.app"
+        applicationId = "com.loankuber.admin"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -34,9 +34,9 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    buildFeatures {
+
+    buildFeatures{
         dataBinding = true
-        viewBinding = true
     }
 }
 
@@ -48,24 +48,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.annotation)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    // Firebase
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth)
-    implementation(libs.firebase.database)
-
-    // Retrofit
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson)
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.logging.interceptor)
-
 }
-

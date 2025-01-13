@@ -1,17 +1,15 @@
-package com.loankuber.app
+package com.loankuber.app.ui
 
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import com.google.android.gms.location.LocationRequest
-import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,6 +22,8 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import com.loankuber.app.R
+import com.loankuber.app.utils.RetrofitInstance
 import com.loankuber.app.databinding.ActivityFormBinding
 import com.loankuber.app.models.CustomerData
 import com.loankuber.app.utils.SharedPrefsUtil
@@ -32,9 +32,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class FormActivity : AppCompatActivity() {
 

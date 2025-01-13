@@ -1,4 +1,4 @@
-package com.loankuber.app
+package com.loankuber.app.ui
 
 import android.app.ProgressDialog
 import android.content.Intent
@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
+import com.loankuber.app.R
 import com.loankuber.app.utils.SharedPrefsUtil
 
 class LoginActivity : AppCompatActivity() {

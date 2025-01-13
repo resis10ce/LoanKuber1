@@ -1,4 +1,4 @@
-package com.loankuber.app
+package com.loankuber.app.utils
 import com.loankuber.app.services.ApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
