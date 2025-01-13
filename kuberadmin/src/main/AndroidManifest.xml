@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.READ_MEDIA_DOCUMENTS"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_DOCUMENTS" />
 
     <application
         android:name=".KuberAdmin"
@@ -11,6 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LoanKuber">
+        <activity
+            android:name=".CreateAgentActivity"
+            android:exported="false" />
         <activity
             android:name=".UploadDataActivity"
             android:exported="false" />

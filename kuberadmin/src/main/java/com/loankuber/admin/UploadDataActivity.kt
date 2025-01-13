@@ -37,8 +37,9 @@ class UploadDataActivity : AppCompatActivity() {
 
         firestore = FirebaseFirestore.getInstance()
 
+        title = "Upload Data"
+
         progressDialog = ProgressDialog(this).apply {
-            title = "Please wait"
             setMessage("Uploading data...")
         }
 
@@ -70,7 +71,8 @@ class UploadDataActivity : AppCompatActivity() {
             }
             withContext(Dispatchers.Main) {
                 binding.sample.text = ""
-                binding.selectedFile.text = ""
+                binding.selectedFile.text = "No file selected"
+                binding.summary.text = "No sample data to show"
                 dataList.clear()
                 Toast.makeText(this@UploadDataActivity, "Data uploaded", Toast.LENGTH_SHORT).show()
                 progressDialog.dismiss()
@@ -100,7 +102,7 @@ class UploadDataActivity : AppCompatActivity() {
     }
 
     private fun readCsvFile(uri: Uri) {
-        binding.selectedFile.text = uri.path
+        binding.selectedFile.text = "File: "+uri.lastPathSegment?.split('/')?.last()
         contentResolver.openInputStream(uri)?.use { inputStream ->
             BufferedReader(InputStreamReader(inputStream)).use { reader ->
                 var line: String?
@@ -130,7 +132,7 @@ class UploadDataActivity : AppCompatActivity() {
                     }
                     lineNumber++
                 }
-                sampleData = "Customers: ${dataList.size} \n\nData Preview:\n$sampleData"
+                binding.summary.text = "Total Customers: ${dataList.size}"
                 binding.sample.text = sampleData
             }
         }
