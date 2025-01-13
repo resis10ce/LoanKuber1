@@ -122,8 +122,8 @@ class UploadDataActivity : AppCompatActivity() {
                     }
                     val fields = line?.split(',')
                     val loanNumber = fields?.get(0).toString()
-                    val name = fields?.get(0).toString()
-                    val phoneNumber = fields?.get(0).toString()
+                    val name = fields?.get(1).toString()
+                    val phoneNumber = fields?.get(2).toString()
 
                     dataList.add(CustomerStaticData(loanNumber, name, phoneNumber))
 

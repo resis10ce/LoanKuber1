@@ -8,6 +8,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:741906688139:android:294c31b8f7369bf5d2cc8e",
+        "android_client_info": {
+          "package_name": "com.loankuber.admin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJdkeXSdzx81onHbHYNpwd6hkOxIlT6ag"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:741906688139:android:f6bd1d2d4be776b2d2cc8e",
         "android_client_info": {
           "package_name": "com.loankuber.app"

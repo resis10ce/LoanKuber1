@@ -8,8 +8,11 @@ import com.google.android.gms.location.LocationRequest
 import android.os.Bundle
 import android.os.Looper
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Base64
 import android.util.Log
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,7 +25,12 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.loankuber.app.AppDatabase
 import com.loankuber.app.R
+import com.loankuber.app.dao.Customer
+import com.loankuber.app.dao.CustomerDao
 import com.loankuber.app.utils.RetrofitInstance
 import com.loankuber.app.databinding.ActivityFormBinding
 import com.loankuber.app.models.CustomerData
@@ -30,12 +38,19 @@ import com.loankuber.app.utils.SharedPrefsUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
 class FormActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityFormBinding
+
+    private val firestore = FirebaseFirestore.getInstance()
+    private lateinit var db: AppDatabase
+
+    private lateinit var customerDao: CustomerDao
+
     private lateinit var cameraLauncher: ActivityResultLauncher<Intent>
     private var rbitmap: Bitmap? = null
     private var userImage: String? = null
@@ -45,15 +60,27 @@ class FormActivity : AppCompatActivity() {
     private lateinit var locationCallback: LocationCallback
 
     private lateinit var progressDialog: ProgressDialog
+    private lateinit var dataFetchProgress: ProgressDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_form)
 
+        db = AppDatabase.getDatabase(this)
+        customerDao = db.customerDao()
+
         progressDialog = ProgressDialog(this).apply {
             setMessage("Submitting, Pleas wait...")
             setCancelable(false)
         }
+
+        dataFetchProgress = ProgressDialog(this).apply {
+            setMessage("Please wait, syncing data...")
+            setCancelable(false)
+        }
+
+        setupDropdownForSearch()
+        fetchAndStoreData()
 
         cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
@@ -82,6 +109,54 @@ class FormActivity : AppCompatActivity() {
             }
             getCurrentLocation()
         }
+    }
+
+    private fun setupDropdownForSearch() {
+        val options = listOf("Option 1", "Option 2", "Option 3")
+        val adapter = ArrayAdapter(this, com.loankuber.library.R.layout.dropdown_menu_item, options)
+        binding.dropdownMenu.setAdapter(adapter)
+        binding.dropdownMenu.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                s?.let {
+                    if (it.isNotEmpty()) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val data = customerDao.searchCustomers(it.toString())
+                            withContext(Dispatchers.Main) {
+                                adapter.clear()
+                                adapter.addAll(data)
+                                adapter.notifyDataSetChanged()
+                            }
+                        }
+                    }
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun fetchAndStoreData() {
+        dataFetchProgress.show()
+
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val result = firestore.collection("CustomerStaticData").get().await()
+
+            val documents = result.documents
+            val customers = documents.map { document ->
+                val loanNumber = document.getString("loanNumber") ?: ""
+                val name = document.getString("name") ?: ""
+                val searchText = name+" "+loanNumber
+                Customer(loanNumber, name, searchText)
+            }
+
+            customerDao.insertAll(customers)
+            dataFetchProgress.dismiss()
+
+        }
+
     }
 
     private val requestPermissionLauncher = registerForActivityResult(
