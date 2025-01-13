@@ -27,14 +27,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginHorizontal="16dp"
-            android:hint="Search customer"
-            style="@style/ThemeOverlay.Material3.AutoCompleteTextView.OutlinedBox">
+            android:hint="Search customer">
 
             <AutoCompleteTextView
                 android:id="@+id/dropdown_menu"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:paddingHorizontal="16dp"/>
+                android:gravity="bottom"
+                android:textSize="16sp"
+                android:paddingHorizontal="16dp"
+                android:paddingBottom="4dp"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 

@@ -12,6 +12,8 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Base64
 import android.util.Log
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -108,6 +110,16 @@ class FormActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             getCurrentLocation()
+        }
+
+        binding.dropdownMenu.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+            val selectedItem = parent.getItemAtPosition(position).toString()
+            val name = selectedItem.substringBeforeLast(" ")
+            val loanNumber = selectedItem.split(" ").last()
+            binding.name.setText(name)
+            binding.laonNumber.setText(loanNumber)
+            binding.name.isEnabled = false
+            binding.laonNumber.isEnabled = false
         }
     }
 
