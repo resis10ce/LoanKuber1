@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
+import com.loankuber.app.DetailActivity
 import com.loankuber.app.R
 import com.loankuber.app.utils.SharedPrefsUtil
 
@@ -80,7 +81,8 @@ class LoginActivity : AppCompatActivity() {
         mRoot.child("Agents").child(uid).get().addOnSuccessListener {
             if (it.exists()) {
                 SharedPrefsUtil.getInstance(this)?.put(SharedPrefsUtil.AGENT_NAME, it.child("name").value.toString())
-                val mainIntent = Intent(this, FormActivity::class.java)
+               // FIXME val mainIntent = Intent(this, FormActivity::class.java)
+                val mainIntent = Intent(this, DetailActivity::class.java)
                 startActivity(mainIntent)
                 progressDialog.dismiss()
                 finish()
