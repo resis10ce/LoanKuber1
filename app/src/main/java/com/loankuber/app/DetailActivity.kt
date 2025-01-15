@@ -1,5 +1,6 @@
 package com.loankuber.app
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
@@ -12,6 +13,9 @@ class DetailActivity : AppCompatActivity() {
 
     val fragments = listOf(DetailsFragment(), PhotoFragment(), SummaryFragment())
     var currentFragmentIndex = 0
+
+    var userImage: String? = null
+    var savedBitmap: Bitmap? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,12 +33,10 @@ class DetailActivity : AppCompatActivity() {
 
 
         /*
-        showFragment is used for tranction rest  showNextFragment, showPreviousFragment is just maintaing the currentFragmentIndex
+        showFragment is used for fragemnt tranction than rest all functions like  showNextFragment, showPreviousFragment is just maintaing the currentFragmentIndex
         variable and calling the showFragment function.
          */
         showFragment(currentFragmentIndex)
-
-
         prev_btn.setOnClickListener {
             showPreviousFragment()
         }

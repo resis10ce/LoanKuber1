@@ -6,10 +6,20 @@
     tools:context=".PhotoFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Phot Fragment"
-        android:textSize="23sp"/>
+    <ImageView
+        android:id="@+id/photo_fragment_image"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center_horizontal"
+    />
+
+    <Button
+        android:id="@+id/btn_add_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:text="Add Photo"
+        android:layout_gravity="end|bottom"/>
 
 </FrameLayout>
