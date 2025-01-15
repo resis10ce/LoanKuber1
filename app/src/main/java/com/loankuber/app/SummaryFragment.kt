@@ -55,10 +55,12 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
                     val mapsLink = "https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}"
                     fusedLocationClient.removeLocationUpdates(this)
                     Toast.makeText(requireContext(), mapsLink, Toast.LENGTH_SHORT).show()
+                    progressDialog.dismiss()
                     return
                 }
             }
         }
+
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION
