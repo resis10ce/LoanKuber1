@@ -1,44 +1,26 @@
 package com.loankuber.app
 
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.loankuber.library.permissions.LocationPermissionHandler
+import com.loankuber.library.utils.KotlinUtils.toast
 
 class DetailActivity : AppCompatActivity() {
 
-    val fragments = listOf(DetailsFragment(), PhotoFragment(), SummaryFragment())
-    var currentFragmentIndex = 0
+    private val locationPermissionHandler = LocationPermissionHandler(this, this)
 
+    private val fragments = listOf(DetailsFragment(), PhotoFragment(), SummaryFragment())
+    private var currentFragmentIndex = 0
+
+    // These 2 variables store the user image payload and the bitmap of the image
     var userImage: String? = null
     var savedBitmap: Bitmap? = null
-
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        when {
-            permissions.getOrDefault(android.Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
-                // Precise location access granted.
-            }
-
-            permissions.getOrDefault(android.Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
-                // Only approximate location access granted.
-            }
-
-            else -> {
-                // No location access granted.
-                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,26 +32,32 @@ class DetailActivity : AppCompatActivity() {
             insets
         }
 
-        val prev_btn = findViewById<Button>(R.id.btndetail_prev_btn)
-        val next_btn = findViewById<Button>(R.id.btndetail_next_btn)
+        val previousBtn = findViewById<Button>(R.id.btndetail_prev_btn)
+        val nextBtn = findViewById<Button>(R.id.btndetail_next_btn)
 
 
         /*
-        showFragment is used for fragemnt tranction than rest all functions like  showNextFragment, showPreviousFragment is just maintaing the currentFragmentIndex
+        showFragment is used for fragment transaction
+        Rest of the functions like showNextFragment, showPreviousFragment is just maintaining the currentFragmentIndex
         variable and calling the showFragment function.
          */
+        // Show the first fragment
         showFragment(currentFragmentIndex)
-        prev_btn.setOnClickListener {
+
+        previousBtn.setOnClickListener {
             showPreviousFragment()
         }
-        next_btn.setOnClickListener {
+
+        nextBtn.setOnClickListener {
             showNextFragment()
         }
-        checkPermissionsAndGetLocation()
+
+        // Checking the location permission once the activity opens and requesting the permission if not already granted
+        checkAndRequestLocationPermission()
     }
 
 
-    fun showFragment(index: Int) {
+    private fun showFragment(index: Int) {
         val fragment = fragments[index]
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.detail_fragment, fragment)
@@ -77,62 +65,30 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
-    fun showNextFragment() {
+    private fun showNextFragment() {
         if (currentFragmentIndex < fragments.size - 1) {
             currentFragmentIndex++
             showFragment(currentFragmentIndex)
         } else {
-            Toast.makeText(this, "No more fragments", Toast.LENGTH_SHORT).show()
+            toast("No more fragments")
         }
     }
 
-    fun showPreviousFragment() {
+    private fun showPreviousFragment() {
         if (currentFragmentIndex > 0) {
             currentFragmentIndex--
             showFragment(currentFragmentIndex)
         } else {
-            Toast.makeText(this, "No previous fragments", Toast.LENGTH_SHORT).show()
+            toast("No previous fragments")
         }
     }
 
-    private fun checkPermissionsAndGetLocation() {
-        when {
-            ContextCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(
-                        this,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED -> {
-            }
-
-            ActivityCompat.shouldShowRequestPermissionRationale(
-                this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) -> {
-                Toast.makeText(
-                    this,
-                    "Location permission is needed to show your location on map.",
-                    Toast.LENGTH_SHORT
-                ).show()
-                requestPermissionLauncher.launch(
-                    arrayOf(
-                        android.Manifest.permission.ACCESS_FINE_LOCATION,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION
-                    )
-                )
-            }
-
-            else -> {
-                requestPermissionLauncher.launch(
-                    arrayOf(
-                        android.Manifest.permission.ACCESS_FINE_LOCATION,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION
-                    )
-                )
-            }
+    private fun checkAndRequestLocationPermission() {
+        locationPermissionHandler.requestPermission { isGranted ->
+            if (!isGranted) toast("Location permission denied")
         }
     }
+
+    fun getLocationPermissionHandler() = locationPermissionHandler
 
 }

@@ -171,7 +171,7 @@ class FormActivity : AppCompatActivity() {
 
     }
 
-    private val requestPermissionLauncher = registerForActivityResult(
+    private val requestPermissionLauncher = this.registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         when {

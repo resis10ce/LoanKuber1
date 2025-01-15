@@ -1,21 +1,19 @@
 package com.loankuber.app
 
+import android.annotation.SuppressLint
 import android.app.ProgressDialog
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Looper
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import com.loankuber.library.utils.KotlinUtils.toast
 
 
 class SummaryFragment : Fragment(R.layout.fragment_summary) {
@@ -27,21 +25,28 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
 
     private lateinit var progressDialog: ProgressDialog
 
+    private lateinit var parentActivity: DetailActivity
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        parentActivity = requireActivity() as DetailActivity
+
+        // Initialize all the location related variables along with location callback where we would get the location result
+        initializeLocationData()
+
         progressDialog = ProgressDialog(requireContext()).apply {
             setMessage("Getting location... Pleas wait...")
             setCancelable(false)
         }
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        // This function will get the current location of the user (after checking the location permission)
         getCurrentLocation()
 
     }
 
-    private fun getCurrentLocation() {
-        progressDialog.show()
+    private fun initializeLocationData() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).apply {
             setWaitForAccurateLocation(false)
             setMinUpdateIntervalMillis(500)
@@ -52,7 +57,8 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
             override fun onLocationResult(locationResult: LocationResult) {
                 locationResult ?: return
                 for (location in locationResult.locations) {
-                    val mapsLink = "https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}"
+                    val mapsLink =
+                        "https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}"
                     fusedLocationClient.removeLocationUpdates(this)
                     Toast.makeText(requireContext(), mapsLink, Toast.LENGTH_SHORT).show()
                     progressDialog.dismiss()
@@ -60,19 +66,20 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
                 }
             }
         }
+    }
 
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-           Toast.makeText(requireContext(), "Location permission denied", Toast.LENGTH_SHORT).show()
+    @SuppressLint("MissingPermission")
+    private fun getCurrentLocation() {
+        progressDialog.show()
+        if (!parentActivity.getLocationPermissionHandler().isPermissionGranted(requireContext())) {
+            toast("Location permission is required to get your location.")
             progressDialog.dismiss()
             return
         }
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            Looper.getMainLooper()
+        )
     }
 }
