@@ -103,11 +103,11 @@ class FillDetailsFragment : Fragment(R.layout.fragment_fill_details) {
         datePicker.addOnPositiveButtonClickListener { selection ->
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
             calendar.timeInMillis = selection
-            val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val format = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
             val formattedDate = format.format(calendar.time)
 
             selectedDateView.setText(formattedDate)
-            parentActivity.setPtpDate(formattedDate)
+            parentActivity.ptpDate = formattedDate
         }
 
         datePicker.show(childFragmentManager, "datePicker")
@@ -122,11 +122,11 @@ class FillDetailsFragment : Fragment(R.layout.fragment_fill_details) {
         datePicker.addOnPositiveButtonClickListener { selection ->
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
             calendar.timeInMillis = selection
-            val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val format = SimpleDateFormat("d'st' MMM yyyy", Locale.getDefault())
             val formattedDate = format.format(calendar.time)
 
             selectedDateView.setText(formattedDate)
-            parentActivity.setNextVisitDate(formattedDate)
+            parentActivity.nextVisitDate = formattedDate
         }
 
         datePicker.show(childFragmentManager, "datePicker")

@@ -28,8 +28,8 @@ class DetailActivity : AppCompatActivity() {
 
     var name: String? = null
     var loanNumber: String? = null
-    private var ptpDate: String? = null
-    private var nextVisitDate: String? = null
+    var ptpDate: String? = null
+    var nextVisitDate: String? = null
     var outcome: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,7 +84,7 @@ class DetailActivity : AppCompatActivity() {
             currentFragmentIndex--
             showFragment(currentFragmentIndex)
         } else {
-            toast("No previous fragments")
+            onBackPressed()
         }
     }
 
@@ -109,14 +109,6 @@ class DetailActivity : AppCompatActivity() {
             return false
         }
         return true
-    }
-
-    fun setPtpDate(ptpDate: String) {
-        this.ptpDate = ptpDate
-    }
-
-    fun setNextVisitDate(nextVisitDate: String) {
-        this.nextVisitDate = nextVisitDate
     }
 
     fun getLocationPermissionHandler() = locationPermissionHandler

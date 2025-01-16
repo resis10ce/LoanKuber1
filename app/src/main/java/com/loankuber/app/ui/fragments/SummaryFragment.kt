@@ -5,6 +5,8 @@ import android.app.ProgressDialog
 import android.os.Bundle
 import android.os.Looper
 import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -36,6 +38,24 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
 
         // Initialize all the location related variables along with location callback where we would get the location result
         initializeLocationData()
+
+        val loanNumber = view.findViewById<TextView>(R.id.loan_number)
+        val name = view.findViewById<TextView>(R.id.customer_name)
+        val nextVisit = view.findViewById<TextView>(R.id.next_visit_date)
+        val outcome = view.findViewById<TextView>(R.id.outcome)
+        val customerImage = view.findViewById<ImageView>(R.id.customer_image)
+
+        loanNumber.text = "(${parentActivity.loanNumber})"
+        name.text = parentActivity.name
+        nextVisit.text = parentActivity.nextVisitDate
+        if(parentActivity.outcome != "PTP")
+            outcome.text = parentActivity.outcome
+        else
+            outcome.text = "PTP on ${parentActivity.ptpDate}"
+
+        if(parentActivity.savedBitmap != null){
+            customerImage.setImageBitmap(parentActivity.savedBitmap)
+        }
 
         progressDialog = ProgressDialog(requireContext()).apply {
             setMessage("Getting location... Pleas wait...")
