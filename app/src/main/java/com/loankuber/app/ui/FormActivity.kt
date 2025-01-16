@@ -82,7 +82,6 @@ class FormActivity : AppCompatActivity() {
         }
 
         setupDropdownForSearch()
-        fetchAndStoreData()
 
         cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
@@ -117,9 +116,9 @@ class FormActivity : AppCompatActivity() {
             val name = selectedItem.substringBeforeLast(" ")
             val loanNumber = selectedItem.split(" ").last()
             binding.name.setText(name)
-            binding.laonNumber.setText(loanNumber)
+            binding.loanNumber.setText(loanNumber)
             binding.name.isEnabled = false
-            binding.laonNumber.isEnabled = false
+            binding.loanNumber.isEnabled = false
         }
     }
 
@@ -149,27 +148,7 @@ class FormActivity : AppCompatActivity() {
         })
     }
 
-    private fun fetchAndStoreData() {
-        dataFetchProgress.show()
 
-        CoroutineScope(Dispatchers.IO).launch {
-
-            val result = firestore.collection("CustomerStaticData").get().await()
-
-            val documents = result.documents
-            val customers = documents.map { document ->
-                val loanNumber = document.getString("loanNumber") ?: ""
-                val name = document.getString("name") ?: ""
-                val searchText = name+" "+loanNumber
-                Customer(loanNumber, name, searchText)
-            }
-
-            customerDao.insertAll(customers)
-            dataFetchProgress.dismiss()
-
-        }
-
-    }
 
     private val requestPermissionLauncher = this.registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -227,7 +206,7 @@ class FormActivity : AppCompatActivity() {
                 for (location in locationResult.locations) {
                     val mapsLink = "https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}"
                     val name = binding.name.text.toString()
-                    val loanNumber = binding.laonNumber.text.toString()
+                    val loanNumber = binding.loanNumber.text.toString()
 
                     postLoanDetails(name, loanNumber, mapsLink)
 
@@ -320,7 +299,8 @@ class FormActivity : AppCompatActivity() {
                 RetrofitInstance.api.postLoanDetails("insert", customerData)
                 withContext(Dispatchers.Main) {
                     binding.name.setText("")
-                    binding.laonNumber.setText("")
+                    binding.loanNumber.setText("")
+                    binding.loanNumber.setText("")
                     binding.image.setImageDrawable(getDrawable(R.drawable.no_image))
                     userImage = null
                     rbitmap = null

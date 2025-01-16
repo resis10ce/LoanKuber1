@@ -26,4 +26,7 @@ interface CustomerDao {
 
     @Query("SELECT loanNumber FROM customer ORDER BY loanNumber DESC LIMIT 1")
     suspend fun getLargestLoanNumber(): String?
+
+    @Query("SELECT searchText FROM customer ORDER BY loanNumber ASC LIMIT :limit")
+    suspend fun searchCustomers(limit: Int): List<String>
 }

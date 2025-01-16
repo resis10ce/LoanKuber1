@@ -3,11 +3,14 @@ package com.loankuber.app
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.widget.Button
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.loankuber.app.ui.fragments.FillDetailsFragment
+import com.loankuber.app.ui.fragments.GetCustomerFragment
+import com.loankuber.app.ui.fragments.PhotoFragment
+import com.loankuber.app.ui.fragments.SummaryFragment
 import com.loankuber.library.permissions.LocationPermissionHandler
 import com.loankuber.library.utils.KotlinUtils.toast
 
@@ -15,12 +18,18 @@ class DetailActivity : AppCompatActivity() {
 
     private val locationPermissionHandler = LocationPermissionHandler(this, this)
 
-    private val fragments = listOf(DetailsFragment(), PhotoFragment(), SummaryFragment())
+    private val fragments = listOf(GetCustomerFragment(), FillDetailsFragment(), PhotoFragment(), SummaryFragment())
     private var currentFragmentIndex = 0
 
     // These 2 variables store the user image payload and the bitmap of the image
     var userImage: String? = null
     var savedBitmap: Bitmap? = null
+
+    var name: String? = null
+    var loanNumber: String? = null
+    private var ptpDate: String? = null
+    private var nextVisitDate: String? = null
+    var outcome: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +74,7 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun showNextFragment() {
+    fun showNextFragment() {
         if (currentFragmentIndex < fragments.size - 1) {
             currentFragmentIndex++
             showFragment(currentFragmentIndex)
@@ -87,6 +96,31 @@ class DetailActivity : AppCompatActivity() {
         locationPermissionHandler.requestPermission { isGranted ->
             if (!isGranted) toast("Location permission denied")
         }
+    }
+
+    fun setCustomerDetails(name: String?, loanNumber: String?) {
+        this.name = name
+        this.loanNumber = loanNumber
+    }
+
+    fun hasCustomerDetails() = name != null && loanNumber != null
+
+    fun hasFilledDetails(): Boolean {
+        if(outcome == null || nextVisitDate == null) {
+            return false
+        }
+        else if(outcome.equals("PTP") && ptpDate == null) {
+            return false
+        }
+        return true
+    }
+
+    fun setPtpDate(ptpDate: String) {
+        this.ptpDate = ptpDate
+    }
+
+    fun setNextVisitDate(nextVisitDate: String) {
+        this.nextVisitDate = nextVisitDate
     }
 
     fun getLocationPermissionHandler() = locationPermissionHandler

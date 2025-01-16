@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    tools:context=".ui.fragments.GetCustomerFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,8 +20,8 @@
             android:textColor="@color/textColor"
             android:textSize="24sp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="48dp"
-            android:text="Enter customer details"/>
+            android:layout_marginTop="56dp"
+            android:text="Select customer to process"/>
 
 
 
@@ -28,6 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginHorizontal="16dp"
+            app:endIconMode="dropdown_menu"
             android:hint="Search customer">
 
             <AutoCompleteTextView
@@ -35,9 +39,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:gravity="bottom"
-                android:textSize="16sp"
                 android:paddingHorizontal="16dp"
-                android:paddingBottom="4dp"/>
+                android:paddingBottom="4dp"
+                android:textSize="16sp"
+                android:imeOptions="actionDone"
+                android:singleLine="true"
+                android:maxLines="1"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -48,12 +55,12 @@
             android:layout_marginTop="16dp"
             android:layout_marginHorizontal="16dp"
             android:enabled="false"
-            android:hint="Customer Name">
+            android:hint="Customer name">
 
             <EditText
                 android:id="@+id/name"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -64,7 +71,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginHorizontal="16dp"
             android:enabled="false"
-            android:hint="Loan Number">
+            android:hint="Loan number">
 
             <EditText
                 android:id="@+id/loan_number"
@@ -73,56 +80,14 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/add_photo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="24dp"
-                android:text="Add Photo"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"/>
-
-            <Button
-                android:id="@+id/submit_btm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="24dp"
-                android:text="Submit Details"/>
-
-        </LinearLayout>
-
-
-        <androidx.cardview.widget.CardView
+        <Button
+            android:id="@+id/select_customer"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:text="Select"
+            android:layout_gravity="right"
             android:layout_margin="16dp"
-            app:cardCornerRadius="24dp">
-
-            <ImageView
-                android:id="@+id/image"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitCenter"
-                android:adjustViewBounds="true"
-                android:src="@drawable/no_image"/>
-
-        </androidx.cardview.widget.CardView>
-
+            android:textColor="@color/white"/>
     </LinearLayout>
 
-</layout>
+</FrameLayout>

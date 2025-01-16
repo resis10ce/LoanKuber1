@@ -1,4 +1,4 @@
-package com.loankuber.app
+package com.loankuber.app.ui.fragments
 
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
@@ -13,6 +13,8 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import com.loankuber.app.DetailActivity
+import com.loankuber.app.R
 import com.loankuber.library.utils.KotlinUtils.toast
 
 

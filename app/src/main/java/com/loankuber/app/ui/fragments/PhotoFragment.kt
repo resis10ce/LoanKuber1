@@ -1,4 +1,4 @@
-package com.loankuber.app
+package com.loankuber.app.ui.fragments
 
 import android.app.Activity
 import android.content.Intent
@@ -11,6 +11,8 @@ import android.widget.ImageView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import com.loankuber.app.DetailActivity
+import com.loankuber.app.R
 import com.loankuber.app.utils.ImageUtils
 import com.loankuber.library.permissions.CameraPermissionHandler
 import com.loankuber.library.utils.KotlinUtils.toast
