@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="textColor">@color/white</color>
+    <color name="iconColor">#DDDDDD</color>
+    <color name="cardColor">#222222</color>
 </resources>

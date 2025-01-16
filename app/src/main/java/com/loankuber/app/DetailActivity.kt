@@ -3,6 +3,7 @@ package com.loankuber.app
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageButton
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -41,8 +42,7 @@ class DetailActivity : AppCompatActivity() {
             insets
         }
 
-        val previousBtn = findViewById<Button>(R.id.btndetail_prev_btn)
-        val nextBtn = findViewById<Button>(R.id.btndetail_next_btn)
+        val previousBtn = findViewById<ImageButton>(R.id.btndetail_prev_btn)
 
 
         /*
@@ -55,10 +55,6 @@ class DetailActivity : AppCompatActivity() {
 
         previousBtn.setOnClickListener {
             showPreviousFragment()
-        }
-
-        nextBtn.setOnClickListener {
-            showNextFragment()
         }
 
         // Checking the location permission once the activity opens and requesting the permission if not already granted

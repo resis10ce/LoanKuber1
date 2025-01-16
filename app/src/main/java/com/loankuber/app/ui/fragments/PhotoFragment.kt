@@ -8,6 +8,7 @@ import android.provider.MediaStore
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
@@ -35,15 +36,24 @@ class PhotoFragment : Fragment(R.layout.fragment_photo) {
 
         // Initialize the views
         val saveImage: ImageView = view.findViewById(R.id.photo_fragment_image)
-        val addPhoto: Button = view.findViewById(R.id.btn_add_photo)
+        val continueBtn: Button = view.findViewById(R.id.continue_btn)
+        val addPhotoLayout: LinearLayout = view.findViewById(R.id.add_photo_layout)
 
         // If the user has already clicked a photo, then show it here
         if (parentActivity.savedBitmap != null) {
             saveImage.setImageBitmap(parentActivity.savedBitmap)
+            addPhotoLayout.visibility = View.GONE
         }
 
-        addPhoto.setOnClickListener {
+        saveImage.setOnClickListener {
             checkCameraPermissionAndOpenCamera()
+        }
+
+        continueBtn.setOnClickListener {
+            if(parentActivity.userImage != null)
+                parentActivity.showNextFragment()
+            else
+                toast("Please click a photo")
         }
 
         /*
@@ -54,10 +64,12 @@ class PhotoFragment : Fragment(R.layout.fragment_photo) {
                 if (result.resultCode == Activity.RESULT_OK) {
                     val bitmap = result.data?.extras?.get("data") as? Bitmap
                     bitmap?.let {
-                        val resizedBitmap = ImageUtils.getResizedBitmap(bitmap, 250)
+                        val resizedBitmap = ImageUtils.getResizedBitmap(bitmap, 300)
                         parentActivity.savedBitmap = resizedBitmap
                         parentActivity.userImage = ImageUtils.getStringImage(resizedBitmap)
-                        saveImage.setImageBitmap(parentActivity.savedBitmap)
+                        saveImage.setImageBitmap(bitmap)
+                        addPhotoLayout.visibility = View.GONE
+
                     }
                 }
             }
