@@ -109,26 +109,30 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop" />
 
-        <FrameLayout
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="150dp"
+            app:cardCornerRadius="20dp"
             android:layout_gravity="bottom"
-            android:layout_margin="20dp"
-            android:background="@drawable/shape_corner_20dp">
+            android:layout_margin="20dp">
 
-            <WebView
-                android:id="@+id/webView"
+            <org.osmdroid.views.MapView
+                android:id="@+id/mapView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
             <TextView
+                android:id="@+id/today"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Map goes here"
-                android:textSize="18sp"
-                android:layout_gravity="center"/>
+                android:layout_marginBottom="4dp"
+                android:layout_gravity="bottom|center_horizontal"
+                tools:text="12/07/2025"
+                android:textColor="@color/black"
+                android:textSize="15sp"/>
 
-        </FrameLayout>
+
+        </androidx.cardview.widget.CardView>
 
 
     </androidx.cardview.widget.CardView>

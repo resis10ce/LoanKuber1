@@ -2,11 +2,10 @@ package com.loankuber.app.ui.fragments
 
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
+import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
 import android.os.Looper
 import android.view.View
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -20,6 +19,14 @@ import com.google.android.gms.location.Priority
 import com.loankuber.app.DetailActivity
 import com.loankuber.app.R
 import com.loankuber.library.utils.KotlinUtils.toast
+import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 class SummaryFragment : Fragment(R.layout.fragment_summary) {
@@ -33,9 +40,12 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
 
     private lateinit var parentActivity: DetailActivity
 
-    private lateinit var webView: WebView
+    private lateinit var mapView: MapView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        // Configure osmdroid (needed for storage and cache)
+        Configuration.getInstance().load(requireContext().applicationContext,
+            requireContext().getSharedPreferences("osmdroid", MODE_PRIVATE));
         super.onViewCreated(view, savedInstanceState)
 
         parentActivity = requireActivity() as DetailActivity
@@ -46,10 +56,11 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
         val loanNumber = view.findViewById<TextView>(R.id.loan_number)
         val name = view.findViewById<TextView>(R.id.customer_name)
         val nextVisit = view.findViewById<TextView>(R.id.next_visit_date)
+        val today = view.findViewById<TextView>(R.id.today)
         val outcome = view.findViewById<TextView>(R.id.outcome)
         val customerImage = view.findViewById<ImageView>(R.id.customer_image)
 
-        webView = view.findViewById<WebView>(R.id.webView);
+        mapView = view.findViewById(R.id.mapView);
 
         loanNumber.text = "(${parentActivity.loanNumber})"
         name.text = parentActivity.name
@@ -63,6 +74,11 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
             customerImage.setImageBitmap(parentActivity.savedBitmap)
         }
 
+        val date = Date()
+        val format = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
+        val stringDate = format.format(date)
+        today.text = stringDate
+
         progressDialog = ProgressDialog(requireContext()).apply {
             setMessage("Getting location... Pleas wait...")
             setCancelable(false)
@@ -71,6 +87,14 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
         // This function will get the current location of the user (after checking the location permission)
         getCurrentLocation()
 
+    }
+
+    private fun addMarker(point: GeoPoint, title: String) {
+        val marker = Marker(mapView)
+        marker.position = point
+        marker.title = title
+        mapView.overlays.add(marker)
+        mapView.invalidate()
     }
 
     private fun initializeLocationData() {
@@ -91,21 +115,17 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
                     Toast.makeText(requireContext(), mapsLink, Toast.LENGTH_SHORT).show()
                     progressDialog.dismiss()
 
-                    // Enable JavaScript and other settings
-                    val webSettings = webView.settings
-                    webSettings.setJavaScriptEnabled(true)
-                    webSettings.domStorageEnabled = true
 
-                    webView.webViewClient = WebViewClient()
-                    webView.loadUrl("file:///android_asset/map.html")
+                    // Set up mapView
+                    mapView.setTileSource(TileSourceFactory.MAPNIK)
+                    mapView.setMultiTouchControls(true)
 
+                    val startPoint = GeoPoint(location.latitude, location.longitude)
+                    mapView.controller.setZoom(18)
+                    mapView.controller.setCenter(startPoint)
 
-                    // Wait until WebView loads, then pass lat/lng
-//                    webView.postDelayed({
-//                        val jsCommand = "updateMap(" + "23.3441" + ", " + "85.3096" + ")"
-////                        val jsCommand = (("updateMap(${location.latitude}").toString() + ", " + location.longitude) + ")"
-//                        webView.evaluateJavascript(jsCommand, null)
-//                    }, 1000)
+                    addMarker(startPoint, "Customer Location")
+
 
                     return
                 }

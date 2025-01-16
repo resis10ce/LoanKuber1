@@ -68,5 +68,7 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
+    implementation("org.osmdroid:osmdroid-android:6.1.16")
+
 }
 

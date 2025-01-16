@@ -122,7 +122,7 @@ class FillDetailsFragment : Fragment(R.layout.fragment_fill_details) {
         datePicker.addOnPositiveButtonClickListener { selection ->
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
             calendar.timeInMillis = selection
-            val format = SimpleDateFormat("d'st' MMM yyyy", Locale.getDefault())
+            val format = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
             val formattedDate = format.format(calendar.time)
 
             selectedDateView.setText(formattedDate)
