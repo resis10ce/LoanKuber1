@@ -5,6 +5,8 @@ import android.app.ProgressDialog
 import android.os.Bundle
 import android.os.Looper
 import android.view.View
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -31,6 +33,8 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
 
     private lateinit var parentActivity: DetailActivity
 
+    private lateinit var webView: WebView
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -44,6 +48,8 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
         val nextVisit = view.findViewById<TextView>(R.id.next_visit_date)
         val outcome = view.findViewById<TextView>(R.id.outcome)
         val customerImage = view.findViewById<ImageView>(R.id.customer_image)
+
+        webView = view.findViewById<WebView>(R.id.webView);
 
         loanNumber.text = "(${parentActivity.loanNumber})"
         name.text = parentActivity.name
@@ -84,6 +90,23 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
                     fusedLocationClient.removeLocationUpdates(this)
                     Toast.makeText(requireContext(), mapsLink, Toast.LENGTH_SHORT).show()
                     progressDialog.dismiss()
+
+                    // Enable JavaScript and other settings
+                    val webSettings = webView.settings
+                    webSettings.setJavaScriptEnabled(true)
+                    webSettings.domStorageEnabled = true
+
+                    webView.webViewClient = WebViewClient()
+                    webView.loadUrl("file:///android_asset/map.html")
+
+
+                    // Wait until WebView loads, then pass lat/lng
+//                    webView.postDelayed({
+//                        val jsCommand = "updateMap(" + "23.3441" + ", " + "85.3096" + ")"
+////                        val jsCommand = (("updateMap(${location.latitude}").toString() + ", " + location.longitude) + ")"
+//                        webView.evaluateJavascript(jsCommand, null)
+//                    }, 1000)
+
                     return
                 }
             }

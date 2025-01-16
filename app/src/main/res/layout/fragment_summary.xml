@@ -116,6 +116,11 @@
             android:layout_margin="20dp"
             android:background="@drawable/shape_corner_20dp">
 
+            <WebView
+                android:id="@+id/webView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
