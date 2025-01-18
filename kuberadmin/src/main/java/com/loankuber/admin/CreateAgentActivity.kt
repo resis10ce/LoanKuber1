@@ -1,5 +1,6 @@
 package com.loankuber.admin
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -31,7 +32,13 @@ class CreateAgentActivity : AppCompatActivity() {
             auth.createUserWithEmailAndPassword(binding.email.text.toString(), binding.password.text.toString())
                 .addOnCompleteListener { task ->
                     if(task.isSuccessful){
-                        Toast.makeText(this, "Agent created successfully", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Agent created", Toast.LENGTH_SHORT).show()
+                        auth.signOut()
+                        val loginIntent = Intent(this, LoginActivity::class.java).apply {
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        }
+                        startActivity(loginIntent)
+                        finish()
                     } else {
                         Toast.makeText(this, "Failed to create agent", Toast.LENGTH_SHORT).show()
                     }

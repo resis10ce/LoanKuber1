@@ -20,7 +20,7 @@ class HomeActivity : AppCompatActivity() {
         }
 
         binding.createAgent.setOnClickListener {
-            val dataUploadIntent = Intent(this, UploadDataActivity::class.java)
+            val dataUploadIntent = Intent(this, CreateAgentActivity::class.java)
             startActivity(dataUploadIntent)
         }
     }

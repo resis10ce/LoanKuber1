@@ -5,23 +5,27 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
 import com.loankuber.app.DetailActivity
 import com.loankuber.app.R
 import com.loankuber.app.utils.SharedPrefsUtil
+import com.loankuber.library.utils.KotlinUtils.toast
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var mRoot: DatabaseReference
 
-    private lateinit var progressDialog: ProgressDialog
     private lateinit var loginProgressDialog: ProgressDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,11 +34,6 @@ class LoginActivity : AppCompatActivity() {
 
         auth = Firebase.auth
         mRoot = Firebase.database.reference
-
-        progressDialog = ProgressDialog(this).apply {
-            setMessage("Checking agent data, please wait...")
-            setCancelable(false)
-        }
 
         loginProgressDialog = ProgressDialog(this).apply {
             setMessage("Please wait...")
@@ -50,52 +49,43 @@ class LoginActivity : AppCompatActivity() {
             val email = emailField.text.toString()
             val password = passwordField.text.toString()
 
-            auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        loginProgressDialog.dismiss()
-                        if(auth.currentUser == null){
-                            Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show()
-                            return@addOnCompleteListener
-                        }
-                        gotoFormActivity(auth.currentUser!!.uid)
-                    } else {
-                        loginProgressDialog.dismiss()
-                        Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show()
-                    }
+            CoroutineScope(Dispatchers.IO).launch {
+                val authResult = auth.signInWithEmailAndPassword(email, password).await()
+                authResult.user?.let {
+                    gotoDetailsActivity(it.uid)
+                } ?: run {
+                    loginProgressDialog.dismiss()
+                    toast("Login Failed")
                 }
-        }
-
-    }
-
-    public override fun onStart() {
-        super.onStart()
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            progressDialog.show()
-            gotoFormActivity(currentUser.uid)
-        }
-    }
-
-    private fun gotoFormActivity(uid: String){
-        mRoot.child("Agents").child(uid).get().addOnSuccessListener {
-            if (it.exists()) {
-                SharedPrefsUtil.getInstance(this)?.put(SharedPrefsUtil.AGENT_NAME, it.child("name").value.toString())
-               // FIXME val mainIntent = Intent(this, FormActivity::class.java)
-                val mainIntent = Intent(this, DetailActivity::class.java)
-                startActivity(mainIntent)
-                progressDialog.dismiss()
-                finish()
             }
-            else{
-                Toast.makeText(
-                    this,
-                    "Agent data not found, please contact admin",
-                    Toast.LENGTH_SHORT
-                ).show()
+        }
+
+    }
+
+    private fun gotoDetailsActivity(uid: String){
+        CoroutineScope(Dispatchers.IO).launch {
+            val snapshot: DataSnapshot
+            try {
+                snapshot = mRoot.child("Agents").child(uid).get().await()
+            }
+            catch (e: Exception){
+                loginProgressDialog.dismiss()
+                toast("Login Failed")
+                return@launch
+            }
+
+            if(!snapshot.exists()){
+                loginProgressDialog.dismiss()
+                toast("Agent data not found, please contact admin")
                 auth.signOut()
-                progressDialog.dismiss()
+                return@launch
             }
+
+            SharedPrefsUtil.getInstance(this@LoginActivity)?.put(SharedPrefsUtil.AGENT_NAME, snapshot.child("name").value.toString())
+            val detailsIntent = Intent(this@LoginActivity, DetailActivity::class.java)
+            loginProgressDialog.dismiss()
+            startActivity(detailsIntent)
+            finish()
         }
     }
 }
