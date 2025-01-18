@@ -25,6 +25,13 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // FIXME: This is a hardcoded email. This should be fixed
+            // TODO: Address the above FIXME
+            if(binding.email.text.toString() != "admin@gmail.com"){
+                toast("Error")
+                return@setOnClickListener
+            }
+
             auth.signInWithEmailAndPassword(binding.email.text.toString(), binding.password.text.toString())
                 .addOnCompleteListener { task ->
                     if(task.isSuccessful){

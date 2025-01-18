@@ -13,14 +13,23 @@
         android:fitsSystemWindows="true"
         tools:context=".ui.FormActivity">
 
-
         <TextView
+            android:id="@+id/agent_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/textColor"
             android:textSize="24sp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="56dp"
+            android:layout_marginTop="16dp"
+            tools:text="Hi Shubham Saurav"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textColor"
+            android:textSize="18sp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             android:text="Select customer to process"/>
 
 
@@ -29,7 +38,7 @@
             android:id="@+id/search_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:layout_marginHorizontal="16dp"
             app:endIconMode="dropdown_menu"
             android:hint="Search customer">

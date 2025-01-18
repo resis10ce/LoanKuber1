@@ -19,6 +19,7 @@ import com.loankuber.app.DetailActivity
 import com.loankuber.app.R
 import com.loankuber.app.dao.Customer
 import com.loankuber.app.dao.CustomerDao
+import com.loankuber.app.utils.SharedPrefsUtil
 import com.loankuber.library.utils.KotlinUtils.toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -59,9 +60,12 @@ class GetCustomerFragment : Fragment(R.layout.fragment_get_customer) {
         }
 
         val nameField = view.findViewById<TextView>(R.id.name)
+        val agentName = view.findViewById<TextView>(R.id.agent_name)
         val loanNumberField = view.findViewById<TextView>(R.id.loan_number)
         val selectBtn = view.findViewById<Button>(R.id.select_customer)
         dropdownMenu = view.findViewById(R.id.dropdown_menu)
+
+        agentName.text = "Hi "+SharedPrefsUtil.getInstance(requireContext())?.getString(SharedPrefsUtil.AGENT_NAME)
 
         if(!dataFetched){
             fetchAndStoreData()

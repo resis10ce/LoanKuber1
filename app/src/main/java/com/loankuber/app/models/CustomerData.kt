@@ -1,5 +1,8 @@
 package com.loankuber.app.models
 
+import androidx.annotation.Keep
+
+@Keep
 data class CustomerData(
     val agentName:String,
     val customerName: String,

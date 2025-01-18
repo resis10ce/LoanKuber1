@@ -4,8 +4,10 @@ import android.app.ProgressDialog
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -69,6 +71,17 @@ class DetailActivity : AppCompatActivity() {
 
         // Checking the location permission once the activity opens and requesting the permission if not already granted
         checkAndRequestLocationPermission()
+
+        // Handle back button press
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (currentFragmentIndex > 0) {
+                    showPreviousFragment()
+                } else {
+                    finish()
+                }
+            }
+        })
     }
 
 
@@ -169,4 +182,5 @@ class DetailActivity : AppCompatActivity() {
         outcome = null
         ptpDate=null
     }
+
 }
