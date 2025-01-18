@@ -52,6 +52,7 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
     private lateinit var parentActivity: DetailActivity
 
     private lateinit var mapView: MapView
+    private lateinit var address : String
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         // Configure osmdroid (needed for storage and cache)
@@ -133,10 +134,18 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
                 locationResult ?: return
                 for (location in locationResult.locations) {
                     val mapsLink =
-                        "https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}"
+                        "https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}&query_place_id=${location.latitude},${location.longitude}"
+
                     fusedLocationClient.removeLocationUpdates(this)
-                    Toast.makeText(requireContext(), mapsLink, Toast.LENGTH_SHORT).show()
+
                     parentActivity.maps=mapsLink
+
+                      val geocoder = android.location.Geocoder(requireContext())
+                         val address = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                     val locationName = address?.firstOrNull()?.locality ?: "Unknown Location"
+                     Toast.makeText(requireContext(), "Location: $locationName", Toast.LENGTH_SHORT).show()
+
+
                     progressDialog.dismiss()
 
 
