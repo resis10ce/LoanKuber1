@@ -104,8 +104,8 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
 //        getCurrentLocation()  // Moved to onResume()
 
         submit_btn.setOnClickListener {
-          ////  progressDialog.dismiss()
-            parentActivity.submitData()
+
+            parentActivity.postLoanDetails()
             //progressDialog.dismiss()
         }
 //End of this fragment

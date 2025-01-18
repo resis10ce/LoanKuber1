@@ -124,15 +124,13 @@ class DetailActivity : AppCompatActivity() {
     fun getLocationPermissionHandler() = locationPermissionHandler
 
 
-    fun submitData() {
-        postLoanDetails(name!!,loanNumber!!,userImage!!,nextVisitDate!!,outcome!!, maps!!)
-    }
 
-    private fun postLoanDetails(customerName: String, loanNumber: String, userImage: String,nextvisit:String,outcome:String,maps:String) {
+    fun postLoanDetails() {
         var progressDialog = ProgressDialog(this).apply {
-            setMessage("Getting location... Pleas wait...")
+            setMessage("Submitting, Pleas wait... ")
             setCancelable(false)
         }
+        progressDialog.show()
         val agentName = SharedPrefsUtil.getInstance(this@DetailActivity)?.getString(SharedPrefsUtil.AGENT_NAME)
         if(agentName == null){
             Toast.makeText(this, "Agent Name not found, please contact admin", Toast.LENGTH_SHORT).show()
@@ -140,7 +138,7 @@ class DetailActivity : AppCompatActivity() {
             return
         }
 
-        val customerData = CustomerData(agentName, customerName, loanNumber, userImage, maps,nextvisit,outcome)
+        val customerData = CustomerData(agentName, name!!, loanNumber !!, userImage!! , maps!!, nextVisitDate!!, outcome!! ,ptpDate!!)
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 RetrofitInstance.api.postLoanDetails("insert", customerData)
@@ -149,6 +147,7 @@ class DetailActivity : AppCompatActivity() {
                     resetValues()
                     progressDialog.dismiss()
                     Toast.makeText(this@DetailActivity, "Submitted", Toast.LENGTH_SHORT).show()
+                    showFragment(0)
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -167,5 +166,6 @@ class DetailActivity : AppCompatActivity() {
         ptpDate = null
         nextVisitDate = null
         outcome = null
+        ptpDate=null
     }
 }

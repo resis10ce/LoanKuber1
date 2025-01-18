@@ -7,5 +7,6 @@ data class CustomerData(
     val image: String,
     val map: String,
     val nextVisit: String,
-    val outcome: String
+    val outcome: String,
+    val ptpDate: String
 )
