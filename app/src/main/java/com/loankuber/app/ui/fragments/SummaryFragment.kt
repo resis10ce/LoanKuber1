@@ -5,7 +5,9 @@ import android.app.ProgressDialog
 import android.content.Context.MODE_PRIVATE
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -16,12 +18,20 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import com.google.firebase.firestore.GeoPoint
 import com.loankuber.app.DetailActivity
 import com.loankuber.app.R
+import com.loankuber.app.models.CustomerData
+import com.loankuber.app.utils.RetrofitInstance
+import com.loankuber.app.utils.SharedPrefsUtil
 import com.loankuber.library.utils.KotlinUtils.toast
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
-import org.osmdroid.util.GeoPoint
+//import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import java.text.SimpleDateFormat
@@ -37,6 +47,7 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
     private lateinit var locationCallback: LocationCallback
 
     private lateinit var progressDialog: ProgressDialog
+    private lateinit var progressDialogsubmit:ProgressDialog
 
     private lateinit var parentActivity: DetailActivity
 
@@ -59,6 +70,7 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
         val today = view.findViewById<TextView>(R.id.today)
         val outcome = view.findViewById<TextView>(R.id.outcome)
         val customerImage = view.findViewById<ImageView>(R.id.customer_image)
+        val submit_btn = view.findViewById<Button>(R.id.submit_btm)
 
         mapView = view.findViewById(R.id.mapView);
 
@@ -83,13 +95,24 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
             setMessage("Getting location... Pleas wait...")
             setCancelable(false)
         }
+        progressDialogsubmit = ProgressDialog(requireContext()).apply {
+            setMessage("Getting location... Pleas wait...")
+            setCancelable(false)
+        }
 
         // This function will get the current location of the user (after checking the location permission)
-        getCurrentLocation()
+//        getCurrentLocation()  // Moved to onResume()
 
+        submit_btn.setOnClickListener {
+          ////  progressDialog.dismiss()
+            parentActivity.submitData()
+            //progressDialog.dismiss()
+        }
+//End of this fragment
     }
 
-    private fun addMarker(point: GeoPoint, title: String) {
+
+    private fun addMarker(point: org.osmdroid.util.GeoPoint, title: String) {
         val marker = Marker(mapView)
         marker.position = point
         marker.title = title
@@ -113,6 +136,7 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
                         "https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}"
                     fusedLocationClient.removeLocationUpdates(this)
                     Toast.makeText(requireContext(), mapsLink, Toast.LENGTH_SHORT).show()
+                    parentActivity.maps=mapsLink
                     progressDialog.dismiss()
 
 
@@ -120,7 +144,8 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
                     mapView.setTileSource(TileSourceFactory.MAPNIK)
                     mapView.setMultiTouchControls(true)
 
-                    val startPoint = GeoPoint(location.latitude, location.longitude)
+                    val startPoint =
+                        org.osmdroid.util.GeoPoint(location.latitude, location.longitude)
                     mapView.controller.setZoom(18)
                     mapView.controller.setCenter(startPoint)
 
@@ -147,4 +172,12 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
             Looper.getMainLooper()
         )
     }
+
+    override fun onResume() {
+        super.onResume()
+        getCurrentLocation() // Call getCurrentLocation() here to start location updates
+    }
+
+
+
 }

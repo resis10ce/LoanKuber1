@@ -293,28 +293,28 @@ class FormActivity : AppCompatActivity() {
             return
         }
 
-        val customerData = CustomerData(agentName, customerName, loanNumber, userImage!!, map)
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                RetrofitInstance.api.postLoanDetails("insert", customerData)
-                withContext(Dispatchers.Main) {
-                    binding.name.setText("")
-                    binding.loanNumber.setText("")
-                    binding.loanNumber.setText("")
-                    binding.image.setImageDrawable(getDrawable(R.drawable.no_image))
-                    userImage = null
-                    rbitmap = null
-                    progressDialog.dismiss()
-                    Toast.makeText(this@FormActivity, "Submitted", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    progressDialog.dismiss()
-                    Log.e("TESTER", "postLoanDetails: $e")
-                    Toast.makeText(this@FormActivity, "Error: ${e.message} ${e}", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
+//        val customerData = CustomerData(agentName, customerName, loanNumber, userImage!!, map)
+//        CoroutineScope(Dispatchers.IO).launch {
+//            try {
+//                RetrofitInstance.api.postLoanDetails("insert", customerData)
+//                withContext(Dispatchers.Main) {
+//                    binding.name.setText("")
+//                    binding.loanNumber.setText("")
+//                    binding.loanNumber.setText("")
+//                    binding.image.setImageDrawable(getDrawable(R.drawable.no_image))
+//                    userImage = null
+//                    rbitmap = null
+//                    progressDialog.dismiss()
+//                    Toast.makeText(this@FormActivity, "Submitted", Toast.LENGTH_SHORT).show()
+//                }
+//            } catch (e: Exception) {
+//                withContext(Dispatchers.Main) {
+//                    progressDialog.dismiss()
+//                    Log.e("TESTER", "postLoanDetails: $e")
+//                    Toast.makeText(this@FormActivity, "Error: ${e.message} ${e}", Toast.LENGTH_SHORT).show()
+//                }
+//            }
+//        }
     }
 
 }
