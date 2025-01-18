@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.loankuber.app.AppDatabase
 import com.loankuber.app.DetailActivity
@@ -57,8 +58,8 @@ class GetCustomerFragment : Fragment(R.layout.fragment_get_customer) {
             setCancelable(false)
         }
 
-        val nameField = view.findViewById<EditText>(R.id.name)
-        val loanNumberField = view.findViewById<EditText>(R.id.loan_number)
+        val nameField = view.findViewById<TextView>(R.id.name)
+        val loanNumberField = view.findViewById<TextView>(R.id.loan_number)
         val selectBtn = view.findViewById<Button>(R.id.select_customer)
         dropdownMenu = view.findViewById(R.id.dropdown_menu)
 
@@ -72,8 +73,8 @@ class GetCustomerFragment : Fragment(R.layout.fragment_get_customer) {
             val name = selectedItem.substringBeforeLast(" ")
             val loanNumber = selectedItem.split(" ").last()
 
-            nameField.setText(name)
-            loanNumberField.setText(loanNumber)
+            nameField.text = "Name: $name"
+            loanNumberField.text = "Loan number: $loanNumber"
             parentActivity.setCustomerDetails(name, loanNumber)
 
             fetchAndFillCustomerDetails(loanNumber)

@@ -52,7 +52,7 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
     private lateinit var parentActivity: DetailActivity
 
     private lateinit var mapView: MapView
-    private lateinit var address : String
+    private lateinit var address : TextView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         // Configure osmdroid (needed for storage and cache)
@@ -69,6 +69,7 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
         val name = view.findViewById<TextView>(R.id.customer_name)
         val nextVisit = view.findViewById<TextView>(R.id.next_visit_date)
         val today = view.findViewById<TextView>(R.id.today)
+        address = view.findViewById(R.id.address)
         val outcome = view.findViewById<TextView>(R.id.outcome)
         val customerImage = view.findViewById<ImageView>(R.id.customer_image)
         val submit_btn = view.findViewById<Button>(R.id.submit_btm)
@@ -101,15 +102,10 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
             setCancelable(false)
         }
 
-        // This function will get the current location of the user (after checking the location permission)
-//        getCurrentLocation()  // Moved to onResume()
-
         submit_btn.setOnClickListener {
-
             parentActivity.postLoanDetails()
-            //progressDialog.dismiss()
         }
-//End of this fragment
+        //End of this fragment
     }
 
 
@@ -140,13 +136,10 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
 
                     parentActivity.maps=mapsLink
 
-                      val geocoder = android.location.Geocoder(requireContext())
-                         val address = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-                     val locationName = address?.firstOrNull()?.locality ?: "Unknown Location"
-                     Toast.makeText(requireContext(), "Location: $locationName", Toast.LENGTH_SHORT).show()
-
-
-                    progressDialog.dismiss()
+                    val geocoder = android.location.Geocoder(requireContext())
+                    val addressData = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                    val locationName = addressData?.firstOrNull()?.getAddressLine(0) ?: "Unknown Location"
+                    address.text = locationName
 
 
                     // Set up mapView
@@ -160,6 +153,7 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
 
                     addMarker(startPoint, "Customer Location")
 
+                    progressDialog.dismiss()
 
                     return
                 }
@@ -184,6 +178,7 @@ class SummaryFragment : Fragment(R.layout.fragment_summary) {
 
     override fun onResume() {
         super.onResume()
+        // This function will get the current location of the user (after checking the location permission)
         getCurrentLocation() // Call getCurrentLocation() here to start location updates
     }
 

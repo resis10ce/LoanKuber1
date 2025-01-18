@@ -21,7 +21,7 @@ interface CustomerDao {
     @Query("SELECT * FROM customer")
     suspend fun getAllCustomers(): List<Customer>
 
-    @Query("SELECT searchText FROM customer WHERE searchText LIKE '%' || :query || '%' LIMIT 10")
+    @Query("SELECT searchText FROM customer WHERE searchText LIKE '%' || :query || '%' LIMIT 10 COLLATE NOCASE")
     suspend fun searchCustomers(query: String): List<String>
 
     @Query("SELECT loanNumber FROM customer ORDER BY loanNumber DESC LIMIT 1")

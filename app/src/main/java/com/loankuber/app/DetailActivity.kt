@@ -126,7 +126,7 @@ class DetailActivity : AppCompatActivity() {
 
 
     fun postLoanDetails() {
-        var progressDialog = ProgressDialog(this).apply {
+        val progressDialog = ProgressDialog(this).apply {
             setMessage("Submitting, Pleas wait... ")
             setCancelable(false)
         }
@@ -138,7 +138,7 @@ class DetailActivity : AppCompatActivity() {
             return
         }
 
-        val customerData = CustomerData(agentName, name!!, loanNumber !!, userImage!! , maps!!, nextVisitDate!!, outcome!! ,ptpDate!!)
+        val customerData = CustomerData(agentName, name!!, loanNumber !!, userImage!! , maps!!, nextVisitDate!!, outcome!! ,ptpDate)
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 RetrofitInstance.api.postLoanDetails("insert", customerData)
@@ -147,7 +147,8 @@ class DetailActivity : AppCompatActivity() {
                     resetValues()
                     progressDialog.dismiss()
                     Toast.makeText(this@DetailActivity, "Submitted", Toast.LENGTH_SHORT).show()
-                    showFragment(0)
+                    startActivity(intent)
+                    finish()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {

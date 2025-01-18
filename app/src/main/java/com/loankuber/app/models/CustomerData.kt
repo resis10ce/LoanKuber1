@@ -8,5 +8,5 @@ data class CustomerData(
     val map: String,
     val nextVisit: String,
     val outcome: String,
-    val ptpDate: String
+    val ptpDate: String?
 )
