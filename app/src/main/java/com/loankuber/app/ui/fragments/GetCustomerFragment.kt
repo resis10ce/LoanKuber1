@@ -2,17 +2,19 @@ package com.loankuber.app.ui.fragments
 
 import android.app.ProgressDialog
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import com.google.firebase.firestore.FirebaseFirestore
 import com.loankuber.app.AppDatabase
 import com.loankuber.app.DetailActivity
@@ -41,16 +43,15 @@ class GetCustomerFragment : Fragment(R.layout.fragment_get_customer) {
 
     private var dataFetched = false
 
-    private val options = mutableListOf("")
-    private lateinit var adapter: ArrayAdapter<String>
+    // This is to make a small delay before searching for the customer
+    private var debounceHandler: Handler = Handler(Looper.getMainLooper())
+    private var debounceRunnable: Runnable? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         db = AppDatabase.getDatabase(requireContext())
         customerDao = db.customerDao()
-
-        adapter = ArrayAdapter(requireContext(), com.loankuber.library.R.layout.dropdown_menu_item, options)
 
         parentActivity = requireActivity() as DetailActivity
 
@@ -65,6 +66,11 @@ class GetCustomerFragment : Fragment(R.layout.fragment_get_customer) {
         val selectBtn = view.findViewById<Button>(R.id.select_customer)
         dropdownMenu = view.findViewById(R.id.dropdown_menu)
 
+        if(parentActivity.name != null && parentActivity.loanNumber!=null){
+            nameField.text = "Name: ${parentActivity.name}"
+            loanNumberField.text = "Loan number: ${parentActivity.loanNumber}"
+        }
+
         agentName.text = "Hi "+SharedPrefsUtil.getInstance(requireContext())?.getString(SharedPrefsUtil.AGENT_NAME)
 
         if(!dataFetched){
@@ -73,15 +79,15 @@ class GetCustomerFragment : Fragment(R.layout.fragment_get_customer) {
         setupDropdownForSearch()
 
         dropdownMenu.onItemClickListener = AdapterView.OnItemClickListener { parent, dropdownView, position, id ->
-            val selectedItem = parent.getItemAtPosition(position).toString()
-            val name = selectedItem.substringBeforeLast(" ")
-            val loanNumber = selectedItem.split(" ").last()
-
-            nameField.text = "Name: $name"
-            loanNumberField.text = "Loan number: $loanNumber"
-            parentActivity.setCustomerDetails(name, loanNumber)
-
-            fetchAndFillCustomerDetails(loanNumber)
+            val loanNumber = parent.getItemAtPosition(position).toString()
+            CoroutineScope(Dispatchers.IO).launch {
+                val name = db.customerDao().getCustomerNameByLoanNumber(loanNumber)
+                withContext(Dispatchers.Main) {
+                    nameField.text = "Name: $name"
+                    loanNumberField.text = "Loan number: $loanNumber"
+                    parentActivity.setCustomerDetails(name, loanNumber)
+                }
+            }
         }
 
         dropdownMenu.setOnEditorActionListener { v, actionId, event ->
@@ -134,54 +140,41 @@ class GetCustomerFragment : Fragment(R.layout.fragment_get_customer) {
     }
 
     private fun setupDropdownForSearch() {
-        dropdownMenu.setAdapter(adapter)
         CoroutineScope(Dispatchers.IO).launch {
-            val data = customerDao.searchCustomers(10)
+            val data = customerDao.searchCustomers(20)
             withContext(Dispatchers.Main) {
-                adapter.clear()
-                adapter.addAll(data)
+                val adapter = ArrayAdapter(requireContext(), com.loankuber.library.R.layout.dropdown_menu_item, data)
+                dropdownMenu.setAdapter(adapter)
                 adapter.notifyDataSetChanged()
             }
         }
+
+
+
         dropdownMenu.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 s?.let {
                     if (it.isNotEmpty()) {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val data = customerDao.searchCustomers(it.toString())
-                            withContext(Dispatchers.Main) {
-                                adapter.clear()
-                                adapter.addAll(data)
-                                adapter.notifyDataSetChanged()
+                        debounceRunnable?.let { runnable -> debounceHandler?.removeCallbacks(runnable) }
+                        debounceRunnable = Runnable {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val data = customerDao.searchCustomersByLoanNumber(it.toString())
+                                withContext(Dispatchers.Main) {
+                                    val adapter = ArrayAdapter(requireContext(), com.loankuber.library.R.layout.dropdown_menu_item, data)
+                                    dropdownMenu.setAdapter(adapter)
+                                    adapter.notifyDataSetChanged()
+                                }
                             }
                         }
+                        debounceHandler.postDelayed(debounceRunnable!!, 300)
                     }
                 }
             }
 
             override fun afterTextChanged(s: Editable?) {}
         })
-    }
-
-    private fun fetchAndFillCustomerDetails(loanNumber: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-
-            val doc = firestore.collection("CustomerStaticData").document(loanNumber).get().await()
-
-            if(doc.exists()) {
-                val name = doc.getString("name")
-                val loanNumber = doc.getString("loanNumber")
-                val address = doc.getString("address")
-                val phone = doc.getString("phone")
-
-
-            }
-            else {
-                toast("No data found for loan number $loanNumber")
-            }
-        }
     }
 
 }

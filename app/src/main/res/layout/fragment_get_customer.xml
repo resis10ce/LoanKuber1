@@ -41,7 +41,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginHorizontal="16dp"
             app:endIconMode="dropdown_menu"
-            android:hint="Search customer">
+            android:hint="Search loan number">
 
             <AutoCompleteTextView
                 android:id="@+id/dropdown_menu"

@@ -34,9 +34,6 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize"/>
         <activity
-            android:name=".ui.FormActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.LoginActivity"
             android:exported="false"/>
     </application>

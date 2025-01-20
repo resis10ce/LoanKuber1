@@ -22,11 +22,17 @@ interface CustomerDao {
     suspend fun getAllCustomers(): List<Customer>
 
     @Query("SELECT searchText FROM customer WHERE searchText LIKE '%' || :query || '%' LIMIT 10 COLLATE NOCASE")
-    suspend fun searchCustomers(query: String): List<String>
+    suspend fun searchCustomersByFullText(query: String): List<String>
 
     @Query("SELECT loanNumber FROM customer ORDER BY loanNumber DESC LIMIT 1")
     suspend fun getLargestLoanNumber(): String?
 
-    @Query("SELECT searchText FROM customer ORDER BY loanNumber ASC LIMIT :limit")
+    @Query("SELECT loanNumber FROM customer ORDER BY loanNumber ASC LIMIT :limit")
     suspend fun searchCustomers(limit: Int): List<String>
+
+    @Query("SELECT loanNumber FROM customer WHERE loanNumber LIKE '%' || :query || '%' LIMIT 10 COLLATE NOCASE")
+    suspend fun searchCustomersByLoanNumber(query: String): List<String>
+
+    @Query("SELECT name FROM customer WHERE loanNumber = :loanNumber")
+    suspend fun getCustomerNameByLoanNumber(loanNumber: String): String?
 }
